@@ -1,0 +1,245 @@
+### API de Gestion de Bibliothèque - Tests Complets
+### Utilisez l'extension REST Client dans VS Code pour tester ces endpoints
+
+@baseUrl = http://localhost:8000
+@contentType = application/json
+
+### ========================================
+### LIVRES - CRUD Complet
+### ========================================
+
+### 1. Lister tous les livres
+GET {{baseUrl}}/livres
+Content-Type: {{contentType}}
+
+### 2. Obtenir un livre par ID
+GET {{baseUrl}}/livres/1
+Content-Type: {{contentType}}
+
+### 3. Créer un nouveau livre
+POST {{baseUrl}}/livres
+Content-Type: {{contentType}}
+
+{
+    "titre": "Le Petit Prince",
+    "auteur": "Antoine de Saint-Exupéry",
+    "annee_publication": 1943
+}
+
+### 4. Créer un autre livre
+POST {{baseUrl}}/livres
+Content-Type: {{contentType}}
+
+{
+    "titre": "1984",
+    "auteur": "George Orwell",
+    "annee_publication": 1949
+}
+
+### 5. Mettre à jour un livre
+PUT {{baseUrl}}/livres/1
+Content-Type: {{contentType}}
+
+{
+    "titre": "Les Misérables (Édition Spéciale)",
+    "auteur": "Victor Hugo",
+    "annee_publication": 1862
+}
+
+### 6. Supprimer un livre
+DELETE {{baseUrl}}/livres/15
+Content-Type: {{contentType}}
+
+### ========================================
+### EMPRUNTEURS - CRUD Complet
+### ========================================
+
+### 7. Lister tous les emprunteurs
+GET {{baseUrl}}/emprunteurs
+Content-Type: {{contentType}}
+
+### 8. Obtenir un emprunteur par ID
+GET {{baseUrl}}/emprunteurs/1
+Content-Type: {{contentType}}
+
+### 9. Créer un nouvel emprunteur
+POST {{baseUrl}}/emprunteurs
+Content-Type: {{contentType}}
+
+{
+    "nom": "Pierre Durand",
+    "email": "pierre.durand@email.com"
+}
+
+### 10. Créer un autre emprunteur
+POST {{baseUrl}}/emprunteurs
+Content-Type: {{contentType}}
+
+{
+    "nom": "Marie Martin",
+    "email": "marie.martin@email.com"
+}
+
+### 11. Test validation email (doit échouer)
+POST {{baseUrl}}/emprunteurs
+Content-Type: {{contentType}}
+
+{
+    "nom": "Test Email",
+    "email": "email-invalide"
+}
+
+### 12. Supprimer un emprunteur (sans emprunts actifs)
+DELETE {{baseUrl}}/emprunteurs/6
+Content-Type: {{contentType}}
+
+### ========================================
+### EMPRUNTS - Gestion des prêts
+### ========================================
+
+### 13. Lister tous les emprunts
+GET {{baseUrl}}/emprunts
+Content-Type: {{contentType}}
+
+### 14. Emprunter un livre
+POST {{baseUrl}}/emprunts
+Content-Type: {{contentType}}
+
+{
+    "livre_id": 1,
+    "emprunteur_id": 1
+}
+
+### 15. Emprunter un autre livre
+POST {{baseUrl}}/emprunts
+Content-Type: {{contentType}}
+
+{
+    "livre_id": 2,
+    "emprunteur_id": 2
+}
+
+### 16. Test emprunt livre déjà emprunté (doit échouer)
+POST {{baseUrl}}/emprunts
+Content-Type: {{contentType}}
+
+{
+    "livre_id": 1,
+    "emprunteur_id": 2
+}
+
+### 17. Test emprunt livre inexistant (doit échouer)
+POST {{baseUrl}}/emprunts
+Content-Type: {{contentType}}
+
+{
+    "livre_id": 999,
+    "emprunteur_id": 1
+}
+
+### ========================================
+### RETOURS - Gestion des retours
+### ========================================
+
+### 18. Retourner un livre
+POST {{baseUrl}}/retours/1
+Content-Type: {{contentType}}
+
+### 19. Retourner un autre livre
+POST {{baseUrl}}/retours/2
+Content-Type: {{contentType}}
+
+### 20. Test retour livre déjà disponible (doit échouer)
+POST {{baseUrl}}/retours/1
+Content-Type: {{contentType}}
+
+### ========================================
+### TESTS DE VALIDATION ET ERREURS
+### ========================================
+
+### 21. Test création livre avec données manquantes (doit échouer)
+POST {{baseUrl}}/livres
+Content-Type: {{contentType}}
+
+{
+    "titre": "Livre incomplet"
+}
+
+### 22. Test création emprunteur avec email invalide (doit échouer)
+POST {{baseUrl}}/emprunteurs
+Content-Type: {{contentType}}
+
+{
+    "nom": "Test",
+    "email": "pas-un-email"
+}
+
+### 23. Test suppression emprunteur avec emprunts actifs (doit échouer)
+DELETE {{baseUrl}}/emprunteurs/1
+Content-Type: {{contentType}}
+
+### 24. Test accès à un livre inexistant (doit échouer)
+GET {{baseUrl}}/livres/999
+Content-Type: {{contentType}}
+
+### 25. Test accès à un emprunteur inexistant (doit échouer)
+GET {{baseUrl}}/emprunteurs/999
+Content-Type: {{contentType}}
+
+### ========================================
+### SCÉNARIOS COMPLETS
+### ========================================
+
+### 26. Scénario complet : Créer, emprunter, retourner
+# 1. Créer un nouveau livre
+POST {{baseUrl}}/livres
+Content-Type: {{contentType}}
+
+{
+    "titre": "Le Petit Prince",
+    "auteur": "Antoine de Saint-Exupéry",
+    "annee_publication": 1943
+}
+
+### 27. Créer un nouvel emprunteur
+POST {{baseUrl}}/emprunteurs
+Content-Type: {{contentType}}
+
+{
+    "nom": "Alice Dubois",
+    "email": "alice.dubois@email.com"
+}
+
+### 28. Emprunter le livre
+POST {{baseUrl}}/emprunts
+Content-Type: {{contentType}}
+
+{
+    "livre_id": 11,
+    "emprunteur_id": 6
+}
+
+### 29. Vérifier que le livre est indisponible
+GET {{baseUrl}}/livres/11
+Content-Type: {{contentType}}
+
+### 30. Retourner le livre
+POST {{baseUrl}}/retours/11
+Content-Type: {{contentType}}
+
+### 31. Vérifier que le livre est de nouveau disponible
+GET {{baseUrl}}/livres/11
+Content-Type: {{contentType}}
+
+### ========================================
+### DOCUMENTATION API
+### ========================================
+
+### 32. Accéder à la documentation Swagger
+GET {{baseUrl}}/docs
+
+### 33. Accéder à la documentation ReDoc
+GET {{baseUrl}}/redoc
+
+### 34. Vérifier la santé de l'API
+GET {{baseUrl}}/docs
